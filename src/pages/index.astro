@@ -1,0 +1,39 @@
+---
+import { getCollection } from 'astro:content';
+import FormattedDate from '../components/FormattedDate.astro';
+import Layout from '../layouts/IndexLayout.astro';
+
+const posts = await getCollection('releases');
+posts.sort((a, b) => +b.data.date - +a.data.date).reverse();
+---
+
+<Layout>
+	<main>
+		<div style={{display: "grid", justifyContent: "center"}}>
+			<h1 style={{margin: "auto"}}>JT Labs</h1>
+			<h3 style={{margin: "auto"}}>Hackers / Artists / Engineers</h3>
+		</div>
+		<hr />
+		<ul class="posts" transition:name="post">
+			{
+				posts.map((post) => (
+					<li class="post">
+						<div class="version_wrapper">
+							<div class="version_info">
+								<a href={`/releases/${post.slug}`}>
+									<div class="version_number">{post.data.versionNumber}</div>
+									<FormattedDate class="date" date={post.data.date} />
+								</a>
+							</div>
+						</div>
+						<div class="content">
+							{post.render().then(({ Content }) => (
+								<Content />
+							))}
+						</div>
+					</li>
+				))
+			}
+		</ul>
+	</main>
+</Layout>
